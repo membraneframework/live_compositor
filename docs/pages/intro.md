@@ -2,7 +2,7 @@
 
 ## What is Live Compositor?
 
-LiveCompositor is an open-source media server for real-time, low-latency, programmable video and audio mixing. 
+LiveCompositor is a media server for real-time, low latency, programmable video and audio mixing. 
 
 LiveCompositor targets real-time use cases, with a significant focus on situations where latency is critical. It is a great fit
 for any video conferencing, live-streaming, or broadcasting solutions where you need to combine or modify video on the fly.

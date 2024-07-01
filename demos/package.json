@@ -1,7 +1,7 @@
 {
   "name": "live_compositor_demos",
   "version": "1.0.0",
-  "description": "Demos for LiveCompositor - media server for low-latency video and audio mixing/composing",
+  "description": "Demos for LiveCompositor - media server for low latency video and audio mixing/composing",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
