@@ -74,6 +74,11 @@ const sidebars: SidebarsConfig = {
           id: 'deployment/configuration',
           label: 'Configuration',
         },
+        {
+          type: 'doc',
+          id: 'deployment/aws-ec2',
+          label: 'Example: Terraform + AWS EC2',
+        },
       ],
     },
     {
