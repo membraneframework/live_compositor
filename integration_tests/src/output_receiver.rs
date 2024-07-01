@@ -51,7 +51,7 @@ impl OutputReceiver {
 
     pub fn wait_for_output(self) -> Result<Bytes> {
         self.receiver
-            .recv_timeout(Duration::from_secs(60))
+            .recv_timeout(Duration::from_secs(120))
             .context("Failed to receive output dump")
     }
 

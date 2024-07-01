@@ -437,6 +437,57 @@ function Usage() {
   );
 }
 
+function Licensing() {
+  return (
+    <div className="container margin-top--lg margin-bottom--md">
+      <Heading as="h1" className="margin-bottom--md text--center text--primary">
+        Licensing
+      </Heading>
+      <div className="card container">
+        <div className="card__body">
+          <p className={styles.sectionSubheading}>
+            LiveCompositor is licensed under{' '}
+            <Link to="https://github.com/membraneframework/live_compositor/blob/master/LICENSE">
+              Business Source License 1.1
+            </Link>
+          </p>
+          <p className={styles.sectionSubheading}>
+            Currently, allowed usage is limited to non-production use cases. If you are interested
+            in the production usage contact us (see the section below).
+          </p>
+          <span className={styles.sectionSubheading}>
+            What is the goal of those limitations?
+            <ul>
+              <li>We want to have insight into where and how LiveCompositor is used.</li>
+              <li>We want to block third parties from re-packaging and providing it as a SaaS.</li>
+              <li>
+                In the future, we will add additional grants for free production usage (including
+                commercial ones). However, at least for now, we want to keep the ability to decide
+                that on a case-by-case basis.
+              </li>
+            </ul>
+          </span>
+          <span className={styles.sectionSubheading}>
+            What is <b>not</b> our goal?
+            <ul>
+              <li>
+                We do not want to vendor-lock or provide predatory per-seat/per-core/per-instance
+                pricing. Exact conditions will be discussed case-by-case, but you can expect terms
+                you are comfortable with and that do not threaten your business model.
+              </li>
+              <li>
+                We do not want to block use cases already achievable with existing open-source
+                tooling. You can expect that in most cases like that we will allow free production
+                and commercial use.
+              </li>
+            </ul>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ContactUs() {
   return (
     <div className="container margin-bottom--lg">
@@ -483,6 +534,8 @@ export default function Home(): JSX.Element {
       <Features />
       <div className={styles.sectionSeparator} />
       <Usage />
+      <div className={styles.sectionSeparator} />
+      <Licensing />
       <div className={styles.sectionSeparator} />
       <ContactUs />
     </Layout>
