@@ -1,6 +1,7 @@
 use core::panic;
 use std::{fs::File, io::Write, path::PathBuf, thread, time::Duration};
 
+use compositor_api::types::Resolution;
 use compositor_pipeline::{
     audio_mixer::{AudioChannels, AudioMixingParams, AudioSamples, InputParams, MixingStrategy},
     pipeline::{
@@ -16,21 +17,33 @@ use compositor_pipeline::{
 };
 use compositor_render::{
     error::ErrorStack,
-    scene::{Component, InputStreamComponent},
-    Frame, FrameData, InputId, OutputId, Resolution,
+    scene::{
+        Component, HorizontalAlign, InputStreamComponent, Position, RescaleMode, RescalerComponent,
+        VerticalAlign,
+    },
+    Frame, FrameData, InputId, OutputId,
 };
 use crossbeam_channel::bounded;
 use image::{codecs::png::PngEncoder, ColorType, ImageEncoder};
-use integration_tests::{examples::download_file, read_rgba_texture};
+use integration_tests::read_rgba_texture;
 use live_compositor::{
     config::{read_config, LoggerConfig, LoggerFormat},
     logger::{self, FfmpegLogLevel},
     state::ApiState,
 };
 
-const BUNNY_FILE_URL: &str =
-    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-const BUNNY_FILE_PATH: &str = "examples/assets/BigBuckBunny.mp4";
+// const BUNNY_FILE_URL: &str =
+// "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+// const INPUT_FILE_PATH: &str = "examples/assets/call.mp4";
+// const INPUT_FILE_PATH: &str = "examples/assets/testsrc.mp4";
+const INPUT_FILE_PATH: &str = "examples/assets/BigBuckBunny.mp4";
+
+// const NAME: &str = "linear";
+const NAME: &str = "lanczos";
+const OUTPUT_RESOLUTION: Resolution = Resolution {
+    width: 441,
+    height: 248,
+};
 
 fn root_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -60,22 +73,30 @@ fn main() {
     let output_id = OutputId("output_1".into());
     let input_id = InputId("input_id".into());
 
-    download_file(BUNNY_FILE_URL, BUNNY_FILE_PATH).unwrap();
+    // download_file(BUNNY_FILE_URL, INPUT_FILE_PATH).unwrap();
 
     let output_options = RegisterOutputOptions {
         output_options: RawDataOutputOptions {
             video: Some(RawVideoOptions {
-                resolution: Resolution {
-                    width: 1280,
-                    height: 720,
-                },
+                resolution: OUTPUT_RESOLUTION.into(),
             }),
             audio: Some(RawAudioOptions),
         },
         video: Some(compositor_pipeline::pipeline::OutputVideoOptions {
-            initial: Component::InputStream(InputStreamComponent {
+            initial: Component::Rescaler(RescalerComponent {
                 id: None,
-                input_id: input_id.clone(),
+                position: Position::Static {
+                    width: Some(OUTPUT_RESOLUTION.width as f32),
+                    height: Some(OUTPUT_RESOLUTION.height as f32),
+                },
+                child: Box::new(Component::InputStream(InputStreamComponent {
+                    id: None,
+                    input_id: input_id.clone(),
+                })),
+                transition: None,
+                mode: RescaleMode::Fit,
+                horizontal_align: HorizontalAlign::Left,
+                vertical_align: VerticalAlign::Top,
             }),
             end_condition: PipelineOutputEndCondition::Never,
         }),
@@ -94,7 +115,7 @@ fn main() {
 
     let input_options = RegisterInputOptions {
         input_options: InputOptions::Mp4(Mp4Options {
-            source: Source::File(root_dir().join("examples/assets/BigBuckBunny.mp4")),
+            source: Source::File(root_dir().join(INPUT_FILE_PATH)),
         }),
         queue_options: QueueInputOptions {
             required: true,
@@ -171,8 +192,8 @@ fn write_frame(
     let frame_data = read_rgba_texture(device, queue, &texture);
 
     let filepath = root_dir().join(format!(
-        "examples/raw_channel_output_video_frame_{}.png",
-        index
+        "examples/output/{}/{}_video_frame_{}.png",
+        NAME, NAME, index
     ));
     let file = File::create(filepath).unwrap();
     let encoder = PngEncoder::new(file);

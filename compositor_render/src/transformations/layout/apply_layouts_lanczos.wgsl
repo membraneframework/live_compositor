@@ -13,8 +13,8 @@ struct Layout {
     vertices_transformation: mat4x4<f32>,
     texture_coord_transformation: mat4x4<f32>,
     color: vec4<f32>, // used only when is_texture == 0
-    is_texture: u32, // 0 -> color, 1 -> texture
     layout_resolution: vec2<f32>,
+    is_texture: u32, // 0 -> color, 1 -> texture
 }
 
 @group(0) @binding(0) var texture: texture_2d<f32>;

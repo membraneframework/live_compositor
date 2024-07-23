@@ -102,10 +102,10 @@ impl LayoutNodeParams {
         result[136..140].copy_from_slice(&from_u8_color(background_color.2));
         result[140..144].copy_from_slice(&from_u8_color(background_color.3));
 
-        result[144..148].copy_from_slice(&is_texture.to_ne_bytes());
-        // 12 bytes padding
-        result[152..156].copy_from_slice(&layout_resolution[0].to_ne_bytes());
-        result[156..160].copy_from_slice(&layout_resolution[1].to_ne_bytes());
+        result[144..148].copy_from_slice(&layout_resolution[0].to_ne_bytes());
+        result[148..152].copy_from_slice(&layout_resolution[1].to_ne_bytes());
+        result[152..156].copy_from_slice(&is_texture.to_ne_bytes());
+        // 4 bytes padding
 
         result
     }

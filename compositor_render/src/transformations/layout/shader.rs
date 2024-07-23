@@ -22,6 +22,8 @@ impl LayoutShader {
         let shader_module = wgpu_ctx
             .device
             .create_shader_module(wgpu::include_wgsl!("./apply_layouts_lanczos.wgsl"));
+        // .create_shader_module(wgpu::include_wgsl!("./apply_layouts.wgsl"));
+
         let result = Self::new_pipeline(wgpu_ctx, shader_module)?;
 
         scope.pop(&wgpu_ctx.device)?;
@@ -33,7 +35,7 @@ impl LayoutShader {
         wgpu_ctx: &Arc<WgpuCtx>,
         shader_module: wgpu::ShaderModule,
     ) -> Result<Self, CreateShaderError> {
-        let sampler = Sampler::new(&wgpu_ctx.device);
+        let sampler = Sampler::new_nn(&wgpu_ctx.device);
 
         let texture_bgl = common_pipeline::create_single_texture_bgl(&wgpu_ctx.device);
 
