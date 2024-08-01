@@ -22,8 +22,12 @@ impl WgpuErrorScope {
     }
 
     pub(crate) fn pop(self, device: &wgpu::Device) -> Result<(), WgpuError> {
+        pollster::block_on(self.pop_async(device))
+    }
+
+    pub(crate) async fn pop_async(self, device: &wgpu::Device) -> Result<(), WgpuError> {
         for _ in 0..2 {
-            if let Some(error) = pollster::block_on(device.pop_error_scope()) {
+            if let Some(error) = device.pop_error_scope().await {
                 return Err(error.into());
             }
         }
@@ -36,6 +40,9 @@ impl WgpuErrorScope {
 pub enum CreateWgpuCtxError {
     #[error("Failed to get a wgpu adapter.")]
     NoAdapter,
+
+    #[error("Failed to get a wgpu adapter not really.")]
+    NoAdapterNotReally,
 
     #[error("Failed to get a wgpu device.")]
     NoDevice(#[from] wgpu::RequestDeviceError),

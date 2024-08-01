@@ -91,9 +91,9 @@ impl Image {
     fn download_file(src: &ImageSource) -> Result<bytes::Bytes, ImageError> {
         match src {
             ImageSource::Url { url } => {
-                let response = reqwest::blocking::get(url)?;
+                let response = pollster::block_on(reqwest::get(url))?;
                 let response = response.error_for_status()?;
-                Ok(response.bytes()?)
+                Ok(pollster::block_on(response.bytes())?)
             }
             ImageSource::LocalPath { path } => {
                 let file = fs::read(path)?;

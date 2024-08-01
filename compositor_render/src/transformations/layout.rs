@@ -22,7 +22,7 @@ pub(crate) use layout_renderer::LayoutRenderer;
 use log::error;
 pub(crate) use transformation_matrices::{vertices_transformation_matrix, Position};
 
-pub(crate) trait LayoutProvider: Send {
+pub(crate) trait LayoutProvider {
     fn layouts(&mut self, pts: Duration, inputs: &[Option<Resolution>]) -> NestedLayout;
     fn resolution(&self, pts: Duration) -> Resolution;
 }

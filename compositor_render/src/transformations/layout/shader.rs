@@ -16,15 +16,15 @@ pub struct LayoutShader {
 }
 
 impl LayoutShader {
-    pub fn new(wgpu_ctx: &Arc<WgpuCtx>) -> Result<Self, CreateShaderError> {
-        let scope = WgpuErrorScope::push(&wgpu_ctx.device);
+    pub async fn new(wgpu_ctx: &Arc<WgpuCtx>) -> Result<Self, CreateShaderError> {
+        // let scope = WgpuErrorScope::push(&wgpu_ctx.device);
 
         let shader_module = wgpu_ctx
             .device
             .create_shader_module(wgpu::include_wgsl!("./apply_layouts.wgsl"));
         let result = Self::new_pipeline(wgpu_ctx, shader_module)?;
 
-        scope.pop(&wgpu_ctx.device)?;
+        // scope.pop_async(&wgpu_ctx.device).await?;
 
         Ok(result)
     }

@@ -7,8 +7,8 @@ use super::shader::LayoutShader;
 pub struct LayoutRenderer(pub(super) Arc<LayoutShader>);
 
 impl LayoutRenderer {
-    pub fn new(wgpu_ctx: &Arc<WgpuCtx>) -> Result<Self, CreateShaderError> {
-        let shader = Arc::new(LayoutShader::new(wgpu_ctx)?);
+    pub async fn new(wgpu_ctx: &Arc<WgpuCtx>) -> Result<Self, CreateShaderError> {
+        let shader = Arc::new(LayoutShader::new(wgpu_ctx).await?);
         Ok(Self(shader))
     }
 }

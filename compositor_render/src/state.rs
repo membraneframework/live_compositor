@@ -80,10 +80,10 @@ pub enum RendererSpec {
 }
 
 impl Renderer {
-    pub fn new(
+    pub async fn new(
         opts: RendererOptions,
     ) -> Result<(Self, Arc<dyn EventLoop>), InitRendererEngineError> {
-        let renderer = InnerRenderer::new(opts)?;
+        let renderer = InnerRenderer::new(opts).await?;
         let event_loop = renderer.chromium_context.event_loop();
 
         Ok((Self(Arc::new(Mutex::new(renderer))), event_loop))
@@ -179,15 +179,15 @@ impl Renderer {
 }
 
 impl InnerRenderer {
-    pub fn new(opts: RendererOptions) -> Result<Self, InitRendererEngineError> {
-        let wgpu_ctx = WgpuCtx::new(opts.force_gpu, opts.wgpu_features)?;
+    pub async fn new(opts: RendererOptions) -> Result<Self, InitRendererEngineError> {
+        let wgpu_ctx = WgpuCtx::new(opts.force_gpu, opts.wgpu_features).await?;
 
         Ok(Self {
             wgpu_ctx: wgpu_ctx.clone(),
             text_renderer_ctx: TextRendererCtx::new(),
             chromium_context: Arc::new(ChromiumContext::new(opts.web_renderer, opts.framerate)?),
             render_graph: RenderGraph::empty(),
-            renderers: Renderers::new(wgpu_ctx)?,
+            renderers: Renderers::new(wgpu_ctx).await?,
             stream_fallback_timeout: opts.stream_fallback_timeout,
             scene: SceneState::new(),
         })

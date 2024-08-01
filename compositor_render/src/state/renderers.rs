@@ -18,12 +18,13 @@ pub(crate) struct Renderers {
 }
 
 impl Renderers {
-    pub fn new(wgpu_ctx: Arc<WgpuCtx>) -> Result<Self, InitRendererEngineError> {
+    pub async fn new(wgpu_ctx: Arc<WgpuCtx>) -> Result<Self, InitRendererEngineError> {
         Ok(Self {
             shaders: RendererRegistry::new(RegistryType::Shader),
             web_renderers: RendererRegistry::new(RegistryType::WebRenderer),
             images: RendererRegistry::new(RegistryType::Image),
             layout: LayoutRenderer::new(&wgpu_ctx)
+                .await
                 .map_err(InitRendererEngineError::LayoutTransformationsInitError)?,
         })
     }
