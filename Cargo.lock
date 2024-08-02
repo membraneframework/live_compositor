@@ -673,11 +673,16 @@ version = "0.1.0"
 dependencies = [
  "compositor_render",
  "console_error_panic_hook",
+ "crossbeam-channel",
  "getrandom",
+ "js-sys",
+ "log",
+ "tracing",
  "tracing-subscriber 0.2.25",
  "tracing-wasm",
  "wasm-bindgen",
  "wasm-bindgen-futures",
+ "wasm-log",
  "web-sys",
  "wgpu",
  "winit",
@@ -1962,7 +1967,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber 0.3.18",
  "webrtc-util",
- "wgpu",
 ]
 
 [[package]]
@@ -4455,6 +4459,17 @@ name = "wasm-bindgen-shared"
 version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af190c94f2773fdb3729c55b007a722abb5384da03bc0986df4c289bf5567e96"
+
+[[package]]
+name = "wasm-log"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "def95b2a762924804037f77e3de791f1c177d6ecbe0385a64e519bd7902a5f81"
+dependencies = [
+ "log",
+ "wasm-bindgen",
+ "web-sys",
+]
 
 [[package]]
 name = "wayland-backend"

@@ -51,9 +51,20 @@ opus = "0.3.0"
 rubato = "0.15.0"
 futures-util = "0.3.30"
 tokio = { version = "1", features = ["full"] }
-wgpu = { version = "0.19.1", features = ["naga-ir"] }
+# wgpu = { version = "0.19.1", default-features = false }
 schemars = { git = "https://github.com/membraneframework-labs/schemars", rev = "a5ad1f9", features = [
     "preserve_order",
+] }
+
+# [target.'cfg(target_arch = "wasm32")'.workspace.dependencies]
+wgpu = { version = "0.19.1", default-features = false, features = [
+    "wgsl",
+    "dx12",
+    "metal",
+    "naga-ir",
+    "webgl",
+    "api_log_info",
+    # "fragile-send-sync-non-atomic-wasm", # 💀
 ] }
 
 [dependencies]
@@ -88,13 +99,6 @@ futures-util = { workspace = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 shared_memory = { version = "0.12.4", optional = true }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-wgpu = { version = "0.19.1", features = [
-    "naga-ir",
-    "webgl",
-    "fragile-send-sync-non-atomic-wasm", # 💀
-] }
 
 [[bin]]
 name = "process_helper"

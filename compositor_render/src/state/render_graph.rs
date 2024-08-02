@@ -47,7 +47,7 @@ impl RenderGraph {
     ) -> Result<(), UpdateSceneError> {
         // TODO: If we want nodes to be stateful we could try reusing nodes instead
         //       of recreating them on every scene update
-        let scope = WgpuErrorScope::push(&ctx.wgpu_ctx.device);
+        // let scope = WgpuErrorScope::push(&ctx.wgpu_ctx.device);
 
         let output_tree = OutputRenderTree {
             root: Self::create_node(ctx, output.node)?,
@@ -55,7 +55,7 @@ impl RenderGraph {
             output_format,
         };
 
-        scope.pop(&ctx.wgpu_ctx.device)?;
+        // scope.pop(&ctx.wgpu_ctx.device)?;
 
         self.outputs.insert(output.output_id, output_tree);
 

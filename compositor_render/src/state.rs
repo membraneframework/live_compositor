@@ -39,6 +39,7 @@ pub struct RendererOptions {
     pub stream_fallback_timeout: Duration,
     pub force_gpu: bool,
     pub wgpu_features: wgpu::Features,
+    pub surface_target: Option<wgpu::SurfaceTargetUnsafe>,
 }
 
 #[derive(Clone)]
@@ -110,7 +111,7 @@ impl Renderer {
         self.0.lock().unwrap().scene.unregister_output(output_id)
     }
 
-    pub fn register_renderer(
+    pub async fn register_renderer(
         &self,
         id: RendererId,
         spec: RendererSpec,
@@ -133,6 +134,7 @@ impl Renderer {
             }
             RendererSpec::Image(spec) => {
                 let asset = Image::new(&ctx, spec)
+                    .await
                     .map_err(|err| RegisterRendererError::Image(err, id.clone()))?;
 
                 let mut guard = self.0.lock().unwrap();
@@ -180,7 +182,8 @@ impl Renderer {
 
 impl InnerRenderer {
     pub async fn new(opts: RendererOptions) -> Result<Self, InitRendererEngineError> {
-        let wgpu_ctx = WgpuCtx::new(opts.force_gpu, opts.wgpu_features).await?;
+        let wgpu_ctx =
+            WgpuCtx::new(opts.force_gpu, opts.wgpu_features, opts.surface_target).await?;
 
         Ok(Self {
             wgpu_ctx: wgpu_ctx.clone(),
@@ -211,7 +214,7 @@ impl InnerRenderer {
             stream_fallback_timeout: self.stream_fallback_timeout,
         };
 
-        let scope = WgpuErrorScope::push(&ctx.wgpu_ctx.device);
+        // let scope = WgpuErrorScope::push(&ctx.wgpu_ctx.device);
 
         let input_resolutions = inputs
             .frames
@@ -226,7 +229,7 @@ impl InnerRenderer {
         run_transforms(ctx, &mut self.render_graph, pts);
         let frames = read_outputs(ctx, &mut self.render_graph, pts);
 
-        scope.pop(&ctx.wgpu_ctx.device)?;
+        // scope.pop(&ctx.wgpu_ctx.device)?;
 
         Ok(FrameSet { frames, pts })
     }

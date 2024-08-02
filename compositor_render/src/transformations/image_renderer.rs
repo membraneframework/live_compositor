@@ -50,8 +50,8 @@ pub enum Image {
 }
 
 impl Image {
-    pub fn new(ctx: &RegisterCtx, spec: ImageSpec) -> Result<Self, ImageError> {
-        let file = Self::download_file(&spec.src)?;
+    pub async fn new(ctx: &RegisterCtx, spec: ImageSpec) -> Result<Self, ImageError> {
+        let file = Self::download_file(&spec.src).await?;
         let renderer = match spec.image_type {
             ImageType::Png => {
                 let asset = BitmapAsset::new(&ctx.wgpu_ctx, file, ImageFormat::Png)?;
@@ -88,12 +88,12 @@ impl Image {
         }
     }
 
-    fn download_file(src: &ImageSource) -> Result<bytes::Bytes, ImageError> {
+    async fn download_file(src: &ImageSource) -> Result<bytes::Bytes, ImageError> {
         match src {
             ImageSource::Url { url } => {
-                let response = pollster::block_on(reqwest::get(url))?;
+                let response = reqwest::get(url).await?;
                 let response = response.error_for_status()?;
-                Ok(pollster::block_on(response.bytes())?)
+                Ok(response.bytes().await?)
             }
             ImageSource::LocalPath { path } => {
                 let file = fs::read(path)?;

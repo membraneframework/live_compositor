@@ -20,7 +20,7 @@ fn global_wgpu_ctx(
     // static CTX: OnceLock<Result<Arc<WgpuCtx>, CreateWgpuCtxError>> = OnceLock::new();
 
     Ok(Arc::new(pollster::block_on(WgpuCtx::create(
-        force_gpu, features,
+        force_gpu, features, None,
     ))?))
 }
 
@@ -37,12 +37,15 @@ pub struct WgpuCtx {
     pub uniform_bgl: wgpu::BindGroupLayout,
     pub plane: Plane,
     pub empty_texture: Texture,
+
+    pub surface: Option<wgpu::Surface<'static>>,
 }
 
 impl WgpuCtx {
     pub async fn new(
         force_gpu: bool,
         features: wgpu::Features,
+        surface_target: Option<wgpu::SurfaceTargetUnsafe>,
     ) -> Result<Arc<Self>, CreateWgpuCtxError> {
         if false
         /*USE_GLOBAL_WGPU_CTX.load(std::sync::atomic::Ordering::Relaxed)*/
@@ -50,15 +53,23 @@ impl WgpuCtx {
             // global_wgpu_ctx(force_gpu, features)
         } else {
         }
-        Ok(Arc::new(Self::create(force_gpu, features).await?))
+        Ok(Arc::new(
+            Self::create(force_gpu, features, surface_target).await?,
+        ))
     }
 
-    async fn create(force_gpu: bool, features: wgpu::Features) -> Result<Self, CreateWgpuCtxError> {
+    async fn create(
+        force_gpu: bool,
+        features: wgpu::Features,
+        surface_target: Option<wgpu::SurfaceTargetUnsafe>,
+    ) -> Result<Self, CreateWgpuCtxError> {
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
             backends: wgpu::Backends::GL,
             ..Default::default()
         });
 
+        let surface =
+            unsafe { surface_target.map(|target| instance.create_surface_unsafe(target).unwrap()) };
         log_available_adapters(&instance);
 
         let adapter = instance
@@ -71,16 +82,18 @@ impl WgpuCtx {
             .unwrap();
 
         let adapter_info = adapter.get_info();
-        info!(
+        tracing::info!(
             "Using {} adapter with {:?} backend",
-            adapter_info.name, adapter_info.backend
+            adapter_info.name,
+            adapter_info.backend
         );
         if force_gpu && adapter_info.device_type != wgpu::DeviceType::Cpu {
             error!("Selected adapter is CPU based. Aborting.");
             return Err(CreateWgpuCtxError::NoAdapter);
         }
         let required_features = features | wgpu::Features::PUSH_CONSTANTS;
-
+        tracing::debug!("Required wgpu features: {:?}", required_features);
+        tracing::debug!("Adapter features: {:?}", adapter.features());
         // let missing_features = required_features.difference(adapter.features());
         // if !missing_features.is_empty() {
         //     error!("Selected adapter or its driver does not support required wgpu features. Missing features: {missing_features:?}).");
@@ -94,7 +107,7 @@ impl WgpuCtx {
                     label: None,
                     required_limits: wgpu::Limits {
                         max_push_constant_size: 128,
-                        ..Default::default()
+                        ..wgpu::Limits::downlevel_webgl2_defaults()
                     },
                     required_features,
                 },
@@ -117,7 +130,7 @@ impl WgpuCtx {
         // scope.pop_async(&device).await?;
 
         device.on_uncaptured_error(Box::new(|e| {
-            error!("wgpu error: {:?}", e);
+            tracing::error!("wgpu error: {:?}", e);
         }));
 
         Ok(Self {
@@ -129,6 +142,7 @@ impl WgpuCtx {
             uniform_bgl,
             plane,
             empty_texture,
+            surface,
         })
     }
 }
