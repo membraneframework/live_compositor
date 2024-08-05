@@ -3,8 +3,10 @@ use std::{sync::Arc, thread, time::Duration};
 use compositor_render::{
     image::{ImageSource, ImageSpec, ImageType},
     scene::{
-        AbsolutePosition, Component, HorizontalPosition, ImageComponent, Overflow, Position,
-        RGBAColor, ShaderComponent, Size, VerticalPosition, ViewChildrenDirection, ViewComponent,
+        AbsolutePosition, Component, HorizontalAlign, HorizontalPosition, ImageComponent,
+        InterpolationKind, Overflow, Position, RGBAColor, RescaleMode, RescalerComponent,
+        ShaderComponent, Size, Transition, VerticalAlign, VerticalPosition, ViewChildrenDirection,
+        ViewComponent,
     },
     shader::ShaderSpec,
     web_renderer::WebRendererInitOptions,
@@ -104,16 +106,16 @@ pub async fn test_render() {
         .await
         .unwrap();
 
-    let shader_id = RendererId("silly".into());
-    renderer
-        .register_renderer(
-            shader_id.clone(),
-            RendererSpec::Shader(ShaderSpec {
-                source: include_str!("../../integration_tests/examples/silly.wgsl").into(),
-            }),
-        )
-        .await
-        .unwrap();
+    // let shader_id = RendererId("silly".into());
+    // renderer
+    //     .register_renderer(
+    //         shader_id.clone(),
+    //         RendererSpec::Shader(ShaderSpec {
+    //             source: include_str!("../../integration_tests/examples/silly.wgsl").into(),
+    //         }),
+    //     )
+    //     .await
+    //     .unwrap();
 
     info!("Renderers registered");
 
@@ -121,41 +123,58 @@ pub async fn test_render() {
         width: 1280,
         height: 720,
     };
-    // let scene = Component::View(ViewComponent {
+    let scene = Component::View(ViewComponent {
+        id: None,
+        children: vec![Component::Rescaler(RescalerComponent {
+            id: None,
+            child: Box::new(Component::Image(ImageComponent {
+                id: None,
+                image_id: img_id,
+            })),
+            position: Position::Absolute(AbsolutePosition {
+                width: Some(640.0),
+                height: Some(360.0),
+                position_horizontal: HorizontalPosition::RightOffset(0.0),
+                position_vertical: VerticalPosition::TopOffset(0.0),
+                rotation_degrees: 0.0,
+            }),
+            transition: Some(Transition {
+                duration: Duration::from_millis(1000),
+                interpolation_kind: InterpolationKind::Bounce,
+            }),
+            mode: RescaleMode::Fit,
+            horizontal_align: HorizontalAlign::Right,
+            vertical_align: VerticalAlign::Top,
+        })],
+        direction: ViewChildrenDirection::Column,
+        position: Position::Absolute(AbsolutePosition {
+            width: None,
+            height: None,
+            position_horizontal: HorizontalPosition::LeftOffset(0.0),
+            position_vertical: VerticalPosition::TopOffset(0.0),
+            rotation_degrees: 0.0,
+        }),
+        transition: None,
+        overflow: Overflow::Visible,
+        background_color: RGBAColor(23, 142, 33, 255),
+    });
+    // let scene = Component::Image(ImageComponent {
+    //     id: None,
+    //     image_id: img_id,
+    // });
+    // let scene = Component::Shader(ShaderComponent {
     //     id: None,
     //     children: vec![Component::Image(ImageComponent {
     //         id: None,
     //         image_id: img_id,
     //     })],
-    //     direction: ViewChildrenDirection::Column,
-    //     position: Position::Absolute(AbsolutePosition {
-    //         width: Some(resolution.width as f32),
-    //         height: Some(resolution.height as f32),
-    //         position_horizontal: HorizontalPosition::LeftOffset(0.0),
-    //         position_vertical: VerticalPosition::TopOffset(0.0),
-    //         rotation_degrees: 0.0,
-    //     }),
-    //     transition: None,
-    //     overflow: Overflow::Visible,
-    //     background_color: RGBAColor(23, 142, 33, 255),
+    //     shader_id,
+    //     shader_param: None,
+    //     size: Size {
+    //         width: resolution.width as f32,
+    //         height: resolution.height as f32,
+    //     },
     // });
-    // let scene = Component::Image(ImageComponent {
-    //     id: None,
-    //     image_id: img_id,
-    // });
-    let scene = Component::Shader(ShaderComponent {
-        id: None,
-        children: vec![Component::Image(ImageComponent {
-            id: None,
-            image_id: img_id,
-        })],
-        shader_id,
-        shader_param: None,
-        size: Size {
-            width: resolution.width as f32,
-            height: resolution.height as f32,
-        },
-    });
     renderer
         .update_scene(
             OutputId("output".into()),
@@ -167,11 +186,10 @@ pub async fn test_render() {
 
     info!("Scene updated");
 
-    for it in 0..30 {
+    for it in 0..1 {
         let output_frames = renderer
-            .render(FrameSet::new(Duration::from_secs(0)))
+            .render(FrameSet::new(Duration::from_secs_f32(0.5 * it as f32)))
             .unwrap();
-
         let output = output_frames
             .frames
             .get(&OutputId("output".into()))
@@ -195,25 +213,9 @@ pub async fn test_render() {
             .dyn_into::<web_sys::CanvasRenderingContext2d>()
             .unwrap();
 
-        // let mut data = context
-        //     .create_image_data_with_imagedata(
-        //         &ImageData::new_with_sw(resolution.width as u32, resolution.height as u32).unwrap(),
-        //     )
-        //     .unwrap();
         info!("Output resolution: {:?}", resolution);
         info!("Rendering to canvas");
         let data = frame_to_rgba(output);
-        // let mut data = Vec::with_capacity(data.len());
-        // for h in 0..resolution.height {
-        //     for w in 0..resolution.width {
-        //         let r = ((w + h + it * 12) % 255) as u8;
-        //         let g = ((w + it * 12) % 255) as u8;
-        //         let b = ((h + it * 12) % 255) as u8;
-        //         let a = 255;
-        //         data.extend_from_slice(&[r, g, b, a]);
-        //     }
-        // }
-
         let data = ImageData::new_with_u8_clamped_array_and_sh(
             Clamped(data.as_slice()),
             resolution.width as u32,

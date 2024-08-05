@@ -63,7 +63,7 @@ wgpu = { version = "0.19.1", default-features = false, features = [
     "metal",
     "naga-ir",
     "webgl",
-    "api_log_info",
+    # "api_log_info",
     # "fragile-send-sync-non-atomic-wasm", # 💀
 ] }
 

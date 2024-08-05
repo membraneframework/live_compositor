@@ -117,7 +117,7 @@ impl WgpuCtx {
 
         let shader_header = crate::transformations::shader::validation::shader_header();
 
-        // let scope = WgpuErrorScope::push(&device);
+        let scope = WgpuErrorScope::push(&device);
 
         let format = TextureFormat::new(&device);
         let utils = TextureUtils::new(&device);
@@ -127,7 +127,7 @@ impl WgpuCtx {
         let plane = Plane::new(&device);
         let empty_texture = Texture::empty(&device);
 
-        // scope.pop_async(&device).await?;
+        scope.pop_async(&device).await?;
 
         device.on_uncaptured_error(Box::new(|e| {
             tracing::error!("wgpu error: {:?}", e);

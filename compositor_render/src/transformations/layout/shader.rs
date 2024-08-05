@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use nalgebra_glm::Mat4;
 use wgpu::ShaderStages;
 
 use crate::wgpu::{
@@ -17,14 +18,14 @@ pub struct LayoutShader {
 
 impl LayoutShader {
     pub async fn new(wgpu_ctx: &Arc<WgpuCtx>) -> Result<Self, CreateShaderError> {
-        // let scope = WgpuErrorScope::push(&wgpu_ctx.device);
+        let scope = WgpuErrorScope::push(&wgpu_ctx.device);
 
         let shader_module = wgpu_ctx
             .device
             .create_shader_module(wgpu::include_wgsl!("./apply_layouts.wgsl"));
         let result = Self::new_pipeline(wgpu_ctx, shader_module)?;
 
-        // scope.pop_async(&wgpu_ctx.device).await?;
+        scope.pop_async(&wgpu_ctx.device).await?;
 
         Ok(result)
     }
@@ -44,13 +45,10 @@ impl LayoutShader {
                     label: Some("shader transformation pipeline layout"),
                     bind_group_layouts: &[
                         &texture_bgl,
-                        &wgpu_ctx.uniform_bgl,
+                        // &wgpu_ctx.uniform_bgl,
                         &sampler.bind_group_layout,
                     ],
-                    push_constant_ranges: &[wgpu::PushConstantRange {
-                        stages: wgpu::ShaderStages::VERTEX_FRAGMENT,
-                        range: 0..4,
-                    }],
+                    push_constant_ranges: &[],
                 });
 
         let pipeline = common_pipeline::create_render_pipeline(
@@ -96,15 +94,20 @@ impl LayoutShader {
             for (layout_id, texture_bg) in input_texture_bgs.iter().enumerate() {
                 render_pass.set_pipeline(&self.pipeline);
 
-                render_pass.set_push_constants(
-                    ShaderStages::VERTEX_FRAGMENT,
-                    0,
-                    &(layout_id as u32).to_le_bytes(),
-                );
+                let layout_id = (layout_id as u32).to_le_bytes().to_vec();
+                let layout_id = layout_id.repeat(16);
+                // layout_id.extend(
+                //     Mat4::zeros()
+                //         .as_slice()
+                //         .into_iter()
+                //         .map(|f| f.to_le_bytes())
+                //         .flatten(),
+                // );
+                // render_pass.set_push_constants(ShaderStages::VERTEX_FRAGMENT, 0, &layout_id);
 
                 render_pass.set_bind_group(0, texture_bg, &[]);
-                render_pass.set_bind_group(1, params, &[]);
-                render_pass.set_bind_group(2, &self.sampler.bind_group, &[]);
+                // render_pass.set_bind_group(1, params, &[]);
+                render_pass.set_bind_group(1, &self.sampler.bind_group, &[]);
 
                 wgpu_ctx.plane.draw(&mut render_pass);
             }
