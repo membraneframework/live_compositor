@@ -21,7 +21,7 @@ impl LayoutShader {
 
         let shader_module = wgpu_ctx
             .device
-            .create_shader_module(wgpu::include_wgsl!("./apply_layouts.wgsl"));
+            .create_shader_module(wgpu::include_wgsl!("./apply_layouts_lanczos.wgsl"));
         let result = Self::new_pipeline(wgpu_ctx, shader_module)?;
 
         scope.pop(&wgpu_ctx.device)?;
@@ -93,9 +93,11 @@ impl LayoutShader {
                 occlusion_query_set: None,
             });
 
-            for (layout_id, texture_bg) in input_texture_bgs.iter().enumerate() {
-                render_pass.set_pipeline(&self.pipeline);
+            render_pass.set_pipeline(&self.pipeline);
+            render_pass.set_bind_group(1, params, &[]);
+            render_pass.set_bind_group(2, &self.sampler.bind_group, &[]);
 
+            for (layout_id, texture_bg) in input_texture_bgs.iter().enumerate() {
                 render_pass.set_push_constants(
                     ShaderStages::VERTEX_FRAGMENT,
                     0,
@@ -103,8 +105,6 @@ impl LayoutShader {
                 );
 
                 render_pass.set_bind_group(0, texture_bg, &[]);
-                render_pass.set_bind_group(1, params, &[]);
-                render_pass.set_bind_group(2, &self.sampler.bind_group, &[]);
 
                 wgpu_ctx.plane.draw(&mut render_pass);
             }

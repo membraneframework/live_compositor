@@ -121,6 +121,7 @@ impl LayoutNode {
         let params: Vec<LayoutNodeParams> = layouts
             .iter()
             .map(|layout| {
+                let layout_resolution = [layout.width, layout.height];
                 let (is_texture, background_color, input_resolution) = match layout.content {
                     RenderLayoutContent::ChildNode { index, .. } => (
                         1,
@@ -137,6 +138,7 @@ impl LayoutNode {
                         .vertices_transformation_matrix(&output_resolution),
                     transform_texture_coords_matrix: layout
                         .texture_coords_transformation_matrix(&input_resolution),
+                    layout_resolution,
                 }
             })
             .collect();

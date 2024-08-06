@@ -56,8 +56,13 @@ fn client_code() -> Result<()> {
         "shader_id": "example_shader",
         "children": [
             {
-                "type": "input_stream",
-                "input_id": "input_1",
+                "type": "rescaler",
+                "width": 1760,
+                "height": 990,
+                "child": {
+                    "type": "input_stream",
+                    "input_id": "input_1"
+                },
             }
         ],
         "resolution": { "width": VIDEO_RESOLUTION.width, "height": VIDEO_RESOLUTION.height },

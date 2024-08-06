@@ -33,14 +33,14 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4<f32> {
     // - adding eps to avoid numerical errors when converting f32 -> u32
     var x_pos = u32((input.tex_coords.x * f32(dimensions.x) - half_pixel_width + eps) * 2.0);
     // x_pos/2 is calculated before conversion to float to make sure that reminder is lost for odd column.
-    var tex_coords = vec2((f32(x_pos/2) / f32(dimensions.x)) + half_pixel_width, input.tex_coords.y);
+    var tex_coords = vec2((f32( x_pos / 2u) / f32(dimensions.x)) + half_pixel_width, input.tex_coords.y);
 
     var uyvy = textureSample(texture, sampler_, tex_coords);
 
     var u = uyvy.x;
     var v = uyvy.z;
     var y = uyvy.y;
-    if (x_pos % 2 != 0) {
+    if (x_pos % 2u != 0u) {
         y = uyvy.w;
     }
 
