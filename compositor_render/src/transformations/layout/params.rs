@@ -3,12 +3,23 @@ use wgpu::util::DeviceExt;
 
 use crate::{scene::RGBAColor, wgpu::WgpuCtx};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(super) struct LayoutNodeParams {
     pub(super) transform_vertices_matrix: Mat4,
     pub(super) transform_texture_coords_matrix: Mat4,
     pub(super) is_texture: u32,
     pub(super) background_color: RGBAColor,
+}
+
+impl LayoutNodeParams {
+    pub fn empty() -> Self {
+        Self {
+            transform_vertices_matrix: Mat4::identity(),
+            transform_texture_coords_matrix: Mat4::identity(),
+            is_texture: 0,
+            background_color: RGBAColor(0, 0, 0, 0),
+        }
+    }
 }
 
 pub(super) struct ParamsBuffer {
@@ -19,8 +30,10 @@ pub(super) struct ParamsBuffer {
 
 impl ParamsBuffer {
     pub fn new(wgpu_ctx: &WgpuCtx, params: Vec<LayoutNodeParams>) -> Self {
+        tracing::error!("Params length: {}", params.len());
         let mut content = Self::shader_buffer_content(&params);
         if content.is_empty() {
+            tracing::error!("Empty params buffer content");
             content = bytes::Bytes::copy_from_slice(&[0]);
         }
 
@@ -67,6 +80,8 @@ impl ParamsBuffer {
     }
 
     fn shader_buffer_content(params: &[LayoutNodeParams]) -> bytes::Bytes {
+        let mut params = params.to_vec();
+        params.resize_with(64, || LayoutNodeParams::empty());
         params
             .iter()
             .map(LayoutNodeParams::shader_buffer_content)

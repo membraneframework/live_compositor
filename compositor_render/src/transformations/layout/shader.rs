@@ -45,10 +45,13 @@ impl LayoutShader {
                     label: Some("shader transformation pipeline layout"),
                     bind_group_layouts: &[
                         &texture_bgl,
-                        // &wgpu_ctx.uniform_bgl,
+                        &wgpu_ctx.uniform_bgl,
                         &sampler.bind_group_layout,
                     ],
-                    push_constant_ranges: &[],
+                    push_constant_ranges: &[wgpu::PushConstantRange {
+                        stages: ShaderStages::VERTEX_FRAGMENT,
+                        range: 0..4,
+                    }],
                 });
 
         let pipeline = common_pipeline::create_render_pipeline(
@@ -95,7 +98,7 @@ impl LayoutShader {
                 render_pass.set_pipeline(&self.pipeline);
 
                 let layout_id = (layout_id as u32).to_le_bytes().to_vec();
-                let layout_id = layout_id.repeat(16);
+                // let layout_id = layout_id.repeat(16);
                 // layout_id.extend(
                 //     Mat4::zeros()
                 //         .as_slice()
@@ -103,11 +106,11 @@ impl LayoutShader {
                 //         .map(|f| f.to_le_bytes())
                 //         .flatten(),
                 // );
-                // render_pass.set_push_constants(ShaderStages::VERTEX_FRAGMENT, 0, &layout_id);
+                render_pass.set_push_constants(ShaderStages::VERTEX_FRAGMENT, 0, &layout_id);
 
                 render_pass.set_bind_group(0, texture_bg, &[]);
-                // render_pass.set_bind_group(1, params, &[]);
-                render_pass.set_bind_group(1, &self.sampler.bind_group, &[]);
+                render_pass.set_bind_group(1, params, &[]);
+                render_pass.set_bind_group(2, &self.sampler.bind_group, &[]);
 
                 wgpu_ctx.plane.draw(&mut render_pass);
             }

@@ -3,10 +3,10 @@ use std::{sync::Arc, thread, time::Duration};
 use compositor_render::{
     image::{ImageSource, ImageSpec, ImageType},
     scene::{
-        AbsolutePosition, Component, HorizontalAlign, HorizontalPosition, ImageComponent,
-        InterpolationKind, Overflow, Position, RGBAColor, RescaleMode, RescalerComponent,
-        ShaderComponent, Size, Transition, VerticalAlign, VerticalPosition, ViewChildrenDirection,
-        ViewComponent,
+        AbsolutePosition, Component, ComponentId, HorizontalAlign, HorizontalPosition,
+        ImageComponent, InterpolationKind, Overflow, Position, RGBAColor, RescaleMode,
+        RescalerComponent, ShaderComponent, Size, Transition, VerticalAlign, VerticalPosition,
+        ViewChildrenDirection, ViewComponent,
     },
     shader::ShaderSpec,
     web_renderer::WebRendererInitOptions,
@@ -118,18 +118,18 @@ pub async fn test_render() {
     //     .unwrap();
 
     info!("Renderers registered");
-
+    let rescaler_id = ComponentId("rescaler".into());
     let resolution = Resolution {
         width: 1280,
         height: 720,
     };
-    let scene = Component::View(ViewComponent {
+    let scene1 = Component::View(ViewComponent {
         id: None,
         children: vec![Component::Rescaler(RescalerComponent {
-            id: None,
+            id: Some(rescaler_id.clone()),
             child: Box::new(Component::Image(ImageComponent {
                 id: None,
-                image_id: img_id,
+                image_id: img_id.clone(),
             })),
             position: Position::Absolute(AbsolutePosition {
                 width: Some(640.0),
@@ -138,8 +138,40 @@ pub async fn test_render() {
                 position_vertical: VerticalPosition::TopOffset(0.0),
                 rotation_degrees: 0.0,
             }),
+            transition: None,
+            mode: RescaleMode::Fit,
+            horizontal_align: HorizontalAlign::Right,
+            vertical_align: VerticalAlign::Top,
+        })],
+        direction: ViewChildrenDirection::Column,
+        position: Position::Absolute(AbsolutePosition {
+            width: None,
+            height: None,
+            position_horizontal: HorizontalPosition::LeftOffset(0.0),
+            position_vertical: VerticalPosition::TopOffset(0.0),
+            rotation_degrees: 0.0,
+        }),
+        transition: None,
+        overflow: Overflow::Visible,
+        background_color: RGBAColor(23, 142, 33, 255),
+    });
+    let scene2 = Component::View(ViewComponent {
+        id: None,
+        children: vec![Component::Rescaler(RescalerComponent {
+            id: Some(rescaler_id),
+            child: Box::new(Component::Image(ImageComponent {
+                id: None,
+                image_id: img_id,
+            })),
+            position: Position::Absolute(AbsolutePosition {
+                width: Some(1280.0),
+                height: Some(720.0),
+                position_horizontal: HorizontalPosition::RightOffset(0.0),
+                position_vertical: VerticalPosition::TopOffset(0.0),
+                rotation_degrees: 0.0,
+            }),
             transition: Some(Transition {
-                duration: Duration::from_millis(1000),
+                duration: Duration::from_millis(10000),
                 interpolation_kind: InterpolationKind::Bounce,
             }),
             mode: RescaleMode::Fit,
@@ -180,15 +212,23 @@ pub async fn test_render() {
             OutputId("output".into()),
             resolution,
             OutputFrameFormat::PlanarYuv420Bytes,
-            scene,
+            scene1,
+        )
+        .unwrap();
+    renderer
+        .update_scene(
+            OutputId("output".into()),
+            resolution,
+            OutputFrameFormat::PlanarYuv420Bytes,
+            scene2,
         )
         .unwrap();
 
     info!("Scene updated");
 
-    for it in 0..1 {
+    for it in 0..500 {
         let output_frames = renderer
-            .render(FrameSet::new(Duration::from_secs_f32(0.5 * it as f32)))
+            .render(FrameSet::new(Duration::from_secs_f32(0.2 * it as f32)))
             .unwrap();
         let output = output_frames
             .frames
@@ -224,7 +264,7 @@ pub async fn test_render() {
         .unwrap();
         context.put_image_data(&data, 0.0, 0.0).unwrap();
 
-        sleep(500).await;
+        sleep(16).await;
     }
     //WgpuFeatures::UNIFORM_BUFFER_AND_STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING| WgpuFeatures::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
 }
