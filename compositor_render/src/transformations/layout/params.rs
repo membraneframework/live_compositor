@@ -81,7 +81,7 @@ impl ParamsBuffer {
 
     fn shader_buffer_content(params: &[LayoutNodeParams]) -> bytes::Bytes {
         let mut params = params.to_vec();
-        params.resize_with(64, || LayoutNodeParams::empty());
+        params.resize_with(100, || LayoutNodeParams::empty());
         params
             .iter()
             .map(LayoutNodeParams::shader_buffer_content)
@@ -108,7 +108,6 @@ impl LayoutNodeParams {
         result[64..128].copy_from_slice(bytemuck::bytes_of(
             &transform_texture_coords_matrix.transpose(),
         ));
-        // 12 bytes padding
         result[128..132].copy_from_slice(&from_u8_color(background_color.0));
         result[132..136].copy_from_slice(&from_u8_color(background_color.1));
         result[136..140].copy_from_slice(&from_u8_color(background_color.2));

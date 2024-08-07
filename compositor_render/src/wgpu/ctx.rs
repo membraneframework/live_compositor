@@ -94,12 +94,12 @@ impl WgpuCtx {
         let required_features = features | wgpu::Features::PUSH_CONSTANTS;
         tracing::debug!("Required wgpu features: {:?}", required_features);
         tracing::debug!("Adapter features: {:?}", adapter.features());
-        // let missing_features = required_features.difference(adapter.features());
-        // if !missing_features.is_empty() {
-        //     error!("Selected adapter or its driver does not support required wgpu features. Missing features: {missing_features:?}).");
-        //     error!("You can configure some of the required features using \"LIVE_COMPOSITOR_REQUIRED_WGPU_FEATURES\" environment variable. Check https://compositor.live/docs for more.");
-        //     return Err(CreateWgpuCtxError::NoAdapterNotReally);
-        // }
+        let missing_features = required_features.difference(adapter.features());
+        if !missing_features.is_empty() {
+            error!("Selected adapter or its driver does not support required wgpu features. Missing features: {missing_features:?}).");
+            error!("You can configure some of the required features using \"LIVE_COMPOSITOR_REQUIRED_WGPU_FEATURES\" environment variable. Check https://compositor.live/docs for more.");
+            return Err(CreateWgpuCtxError::NoAdapterNotReally);
+        }
 
         let (device, queue) = adapter
             .request_device(
@@ -117,7 +117,7 @@ impl WgpuCtx {
 
         let shader_header = crate::transformations::shader::validation::shader_header();
 
-        let scope = WgpuErrorScope::push(&device);
+        // let scope = WgpuErrorScope::push(&device);
 
         let format = TextureFormat::new(&device);
         let utils = TextureUtils::new(&device);
@@ -127,7 +127,7 @@ impl WgpuCtx {
         let plane = Plane::new(&device);
         let empty_texture = Texture::empty(&device);
 
-        scope.pop_async(&device).await?;
+        // scope.pop_async(&device).await?;
 
         device.on_uncaptured_error(Box::new(|e| {
             tracing::error!("wgpu error: {:?}", e);

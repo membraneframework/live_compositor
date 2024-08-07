@@ -52,7 +52,6 @@ impl ApplicationHandler for App {
 
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
-    // tracing_subscriber::fmt::init();
     console_error_panic_hook::set_once();
     tracing_wasm::set_as_global_default();
     wasm_log::init(wasm_log::Config::new(log::Level::Trace));
@@ -139,7 +138,7 @@ pub async fn test_render() {
                 rotation_degrees: 0.0,
             }),
             transition: None,
-            mode: RescaleMode::Fit,
+            mode: RescaleMode::Fill,
             horizontal_align: HorizontalAlign::Right,
             vertical_align: VerticalAlign::Top,
         })],
@@ -161,7 +160,7 @@ pub async fn test_render() {
             id: Some(rescaler_id),
             child: Box::new(Component::Image(ImageComponent {
                 id: None,
-                image_id: img_id,
+                image_id: img_id.clone(),
             })),
             position: Position::Absolute(AbsolutePosition {
                 width: Some(1280.0),
@@ -315,4 +314,59 @@ pub async fn sleep(millis: i32) {
     };
     let p = js_sys::Promise::new(&mut cb);
     wasm_bindgen_futures::JsFuture::from(p).await.unwrap();
+}
+
+
+
+
+// API POC
+
+#[wasm_bindgen]
+pub struct LiveCompositorRenderer {
+    renderer: Renderer,
+}
+
+#[wasm_bindgen]
+impl LiveCompositorRenderer {
+    pub fn render(&self) {
+        info!("Rendering");
+    }
+
+    // pub fn update_scene(&self, scene: Component) {
+    //     info!("Updating scene");
+    // }
+}
+
+// TODO(noituri): Consider using different camelCase
+#[wasm_bindgen]
+pub async fn create_renderer() -> LiveCompositorRenderer {
+    use winit::platform::web::EventLoopExtWebSys;
+
+    let event_loop = EventLoop::new().unwrap();
+    let (sender, receiver) = crossbeam_channel::bounded(1);
+    let mut app = App {
+        window: None,
+        window_ready: sender,
+    };
+    event_loop.spawn_app(app);
+
+    let window = receiver.recv().unwrap();
+
+    let (mut renderer, _) = Renderer::new(RendererOptions {
+        web_renderer: WebRendererInitOptions {
+            enable: false,
+            enable_gpu: false,
+        },
+        framerate: Framerate { num: 30, den: 1 },
+        stream_fallback_timeout: Duration::from_millis(500),
+        force_gpu: false,
+        wgpu_features: wgpu::Features::empty(),
+        surface_target: Some(unsafe { wgpu::SurfaceTargetUnsafe::from_window(&window).unwrap() }),
+    })
+    .await
+    .unwrap(); // TODO(noituri): Handle error
+
+    LiveCompositorRenderer {
+        renderer,
+    }
 }

@@ -21,7 +21,7 @@ struct Layout {
 }
 
 @group(0) @binding(0) var texture: texture_2d<f32>;
-@group(1) @binding(0) var<uniform> layouts: array<Layout, 64>;
+@group(1) @binding(0) var<uniform> layouts: array<Layout, 100>;
 @group(2) @binding(0) var sampler_: sampler;
 
 var<push_constant> layout_id: u32;

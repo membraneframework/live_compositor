@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon"
+        href="https://icons.iconarchive.com/icons/iconarchive/dogecoin-to-the-moon/48/Doge-icon.png"
+        type="image/x-icon">
+    <title>Compositor Web 💀</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="1280" height="720"></canvas>
+    <script type="module">
+        import init, { add, test_render, create_renderer } from "./pkg/compositor_web.js";
+        init().then(async () => {
+            console.log(add(3, 2));
+            const renderer = await test_render();
+            // console.log(renderer);
+            // const renderer = await create_renderer();
+            // renderer.render();
+            // renderer.render();
+        })
+    </script>
+</body>
+
+</html>
