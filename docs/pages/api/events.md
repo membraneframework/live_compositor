@@ -42,6 +42,7 @@ type Event = {
 ```
 
 The input stream has ended and all the frames were already processed.
+It's not emitted on [`input unregister`](routes.md#unregister-input).
 
 ### `AUDIO_INPUT_DELIVERED`
 
@@ -79,3 +80,15 @@ type Event = {
 ```
 
 The input stream has ended and all the audio samples were already processed.
+It's not emitted on [`input unregister`](routes.md#unregister-input).
+
+### `OUTPUT_EOS`
+
+```typescript
+type Event = {
+  type: "OUTPUT_EOS",
+  output_id: string
+}
+```
+
+The output has ended. All video frames and audio samples were sent/written.

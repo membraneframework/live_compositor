@@ -1,10 +1,11 @@
-use compositor_render::OutputId;
+use compositor_render::{event_handler::emit_event, OutputId};
 use crossbeam_channel::Receiver;
 use std::sync::{atomic::AtomicBool, Arc};
 use tracing::{debug, span, Level};
 
 use crate::{
     error::OutputInitError,
+    event::Event,
     pipeline::{rtp::RequestedPort, types::EncoderOutputEvent, AudioCodec, Port, VideoCodec},
 };
 
@@ -77,6 +78,7 @@ impl RtpSender {
                         tcp_server::run_tcp_sender_thread(socket, should_close2, packet_stream)
                     }
                 }
+                emit_event(Event::OutputEos(output_id));
                 debug!("Closing RTP sender thread.")
             })
             .unwrap();
