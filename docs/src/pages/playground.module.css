@@ -5,12 +5,12 @@
   height: 75vh;
   margin: 20px;
 }
-  
+
 .leftSide {
   flex: 1;
   margin: 5px;
 }
-  
+
 .rightSide {
   display: flex;
   flex-direction: column;
@@ -18,7 +18,7 @@
   margin: 5px;
 }
 
-.codeEditorBox{
+.codeEditorBox {
   height: 100%;
   width: 100%;
   min-width: 300px;

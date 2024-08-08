@@ -1,33 +1,57 @@
-import styles from './PlaygroundCodeEditor.module.css';
-import { ChangeEvent, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import 'jsoneditor/dist/jsoneditor.css';
+import './jsoneditor-dark.css';
+import componentTypesJsonSchema from '../../../schemas/component_types.schema.json';
+import { ajvInitialization, JSONEditor } from '../playgroundCodeEditorUtils';
 
 interface PlaygroundCodeEditorProps {
   onChange: (content: object | Error) => void;
-  initialCodeEditorContent: string;
+  initialCodeEditorContent: object;
 }
 
 function PlaygroundCodeEditor({ onChange, initialCodeEditorContent }: PlaygroundCodeEditorProps) {
-  const [content, setContent] = useState<string>(initialCodeEditorContent);
+  const [jsonEditor, setJsonEditor] = useState<typeof JSONEditor | null>(null);
 
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const codeContent = event.target.value;
-    setContent(codeContent);
-    try {
-      const scene = JSON.parse(codeContent);
-      onChange(scene);
-    } catch (error) {
-      onChange(error);
+  const editorContainer = useCallback(node => {
+    if (node === null) {
+      return;
     }
-  };
+    const ajv = ajvInitialization();
+    const validate = ajv.compile(componentTypesJsonSchema);
 
-  return (
-    <textarea
-      className={styles.codeEditor}
-      name="inputArea"
-      placeholder="Enter your code to try it out"
-      value={content}
-      onChange={handleChange}
-    />
-  );
+    const editor = new JSONEditor(node, {
+      mode: 'code',
+      enableSort: false,
+      enableTransform: false,
+      statusBar: false,
+      mainMenuBar: false,
+      ajv,
+      onChange: () => {
+        try {
+          const jsonContent = editor.get();
+          onChange(jsonContent);
+          if (!validate(jsonContent)) throw new Error('Invalid JSON!');
+        } catch (error) {
+          onChange(error);
+        }
+      },
+    });
+
+    editor.setSchema(componentTypesJsonSchema);
+    editor.set(initialCodeEditorContent);
+
+    setJsonEditor(editor);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (jsonEditor) {
+        jsonEditor.destroy();
+      }
+    };
+  }, [jsonEditor]);
+
+  return <div ref={editorContainer} style={{ height: '100%' }} />;
 }
+
 export default PlaygroundCodeEditor;

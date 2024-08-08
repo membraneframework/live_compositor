@@ -1,6 +1,6 @@
 use std::{fs, io, path::PathBuf};
 
-use compositor_api::types;
+use compositor_api::types::{self, Component};
 use live_compositor::routes;
 use schemars::{
     schema::{RootSchema, Schema, SchemaObject},
@@ -35,6 +35,11 @@ pub fn generate_json_schema(check_flag: bool) {
         scene_schema_action,
     );
     generate_schema(schema_for!(ApiTypes), "api_types", api_schema_action);
+    generate_schema(
+        schema_for!(Component),
+        "component_types",
+        SchemaAction::Update,
+    );
 }
 
 /// When variant inside oneOf has a schema additionalProperties set to false then

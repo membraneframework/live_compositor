@@ -1,4 +1,12 @@
-function PlaygroundRenderSettings({ onSubmit }: { onSubmit: () => Promise<void> }) {
+import SubmitButton from './SubmitButton';
+
+function PlaygroundRenderSettings({
+  onSubmit,
+  readyToSubmit,
+}: {
+  onSubmit: () => Promise<void>;
+  readyToSubmit: boolean;
+}) {
   return (
     <div style={{ margin: '10px' }}>
       <div className="row">
@@ -22,9 +30,7 @@ function PlaygroundRenderSettings({ onSubmit }: { onSubmit: () => Promise<void> 
           </select>
         </div>
         <div className="col">
-          <button className="button button--outline button--primary" onClick={onSubmit}>
-            Submit
-          </button>
+          <SubmitButton onSubmit={onSubmit} readyToSubmit={readyToSubmit} />
         </div>
       </div>
     </div>
