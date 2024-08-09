@@ -8,9 +8,6 @@ import Rescaler from './components/Rescaler';
 import WebView from './components/WebView';
 import Shader from './components/Shader';
 import Tiles from './components/Tiles';
-import { test } from './test';
-
-test();
 
 export { View, Text, InputStream, Rescaler, WebView, Image, Shader, Tiles };
 

@@ -2,7 +2,7 @@ import * as Api from '../api';
 import LiveCompositorComponent, { SceneBuilder, SceneComponent } from '../component';
 
 type ImageProps = {
-  children: undefined;
+  children?: undefined;
 
   /**
    * Id of a component.

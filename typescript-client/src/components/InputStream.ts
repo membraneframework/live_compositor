@@ -2,7 +2,7 @@ import * as Api from '../api';
 import LiveCompositorComponent, { SceneBuilder, SceneComponent } from '../component';
 
 type InputStreamProps = {
-  children: undefined;
+  children?: undefined;
 
   /**
    * Id of a component.

@@ -70,7 +70,7 @@
             cargo-nextest
             rust-analyzer
             clang-tools
-            mesa.drivers
+            #mesa.drivers
             blackmagic-desktop-video
           ];
         in
@@ -80,10 +80,10 @@
               packages = devDependencies;
 
               # Fixes "ffplay" used in examples on Linux (not needed on NixOS)
-              env.LIBGL_DRIVERS_PATH = "${pkgs.mesa.drivers}/lib/dri";
+              #env.LIBGL_DRIVERS_PATH = "${pkgs.mesa.drivers}/lib/dri";
 
-              env.LIBCLANG_PATH = "${pkgs.llvmPackages_16.libclang.lib}/lib";
-              env.LD_LIBRARY_PATH = lib.makeLibraryPath (libcefDependencies ++ [ pkgs.mesa.drivers pkgs.libGL pkgs.blackmagic-desktop-video ]);
+              #env.LIBCLANG_PATH = "${pkgs.llvmPackages_16.libclang.lib}/lib";
+              env.LD_LIBRARY_PATH = lib.makeLibraryPath (libcefDependencies ++ [ pkgs.blackmagic-desktop-video ]);
 
               inputsFrom = [ packageWithoutChromium ];
             };

@@ -8,7 +8,7 @@
     "typecheck": "tsc --noEmit",
     "watch": "tsc --noEmit --watch",
     "ts": "ts-node --transpile-only",
-    "1-videoconferencing": "npm run ts ./1-videoconferencing/index.ts",
+    "1-videoconferencing": "npm run ts ./1-videoconferencing/index.tsx",
     "2-tv_broadcast": "npm run ts ./2-tv_broadcast/index.ts",
     "3-live_stream": "npm run ts ./3-live_stream/index.ts",
     "generate-types": "ts-node ./utils/generate_types.ts"
@@ -27,6 +27,7 @@
     "@types/fs-extra": "^11.0.2",
     "@types/node": "^20.12.11",
     "@types/node-fetch": "^2.6.11",
+    "@types/react": "^17.0.80",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "chalk": "^4.1.2",
@@ -36,9 +37,11 @@
     "eslint-plugin-prettier": "^5.0.0",
     "fs-extra": "^11.1.1",
     "json-schema-to-typescript": "^14.0.4",
+    "live-compositor": "file:../typescript-client/live-compositor-0.1.0.tgz",
     "node-fetch": "^2.7.0",
     "node-popup": "^0.1.14",
     "prettier": "^3.0.3",
+    "react": "18.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
