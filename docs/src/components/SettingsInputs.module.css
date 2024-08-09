@@ -1,0 +1,47 @@
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.inputSelector {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 50%;
+    padding: 12px;
+    padding-left: 8px;
+    width: 128px + 12px;
+}
+
+.inputSelectorLabel {
+    margin-top: -12px;
+    justify-content: center;
+    align-items: center;
+}
+
+.inputSelectorSelect {
+    background-color: #303947;
+    border-radius: 4px;
+    padding: 1px 4px 2px 4px;
+
+}
+
+.controlButtonsContainer {
+    flex-basis: 100%;
+    display: flex;
+    margin-top: 6px;
+    justify-content: flex-end;
+}
+
+.controlButton {
+    margin: 0 20px 0 0px;
+    width: 96px;
+}

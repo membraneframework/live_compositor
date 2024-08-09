@@ -1,27 +1,27 @@
+import Link from '@docusaurus/Link';
+import Heading from '@theme/Heading';
+import Layout from '@theme/Layout';
 import clsx from 'clsx';
-import { FaBook, FaCode, FaDocker, FaGears, FaGithub, FaLink } from 'react-icons/fa6';
 import { FaServer } from 'react-icons/fa';
-import { GiFeather, GiBattery100, GiSpeedometer } from 'react-icons/gi';
+import { FaBook, FaCode, FaDocker, FaGears, FaGithub, FaLink } from 'react-icons/fa6';
+import { GiBattery100, GiFeather, GiSpeedometer } from 'react-icons/gi';
 import { IoCloudOffline } from 'react-icons/io5';
 import { MdAudiotrack, MdLiveTv } from 'react-icons/md';
-import Link from '@docusaurus/Link';
-import Layout from '@theme/Layout';
-import Heading from '@theme/Heading';
 
-import styles from './index.module.css';
-import { PropsWithChildren } from 'react';
-import { IconContext, IconType } from 'react-icons';
-import MembraneLogo from '@site/static/img/membrane-logo.svg';
-import SwmLogo from '@site/static/img/swm-logo.svg';
+import { useColorMode } from '@docusaurus/theme-common';
+import BroadcastingImg from '@site/static/img/broadcasting.webp';
 import ComposingImg from '@site/static/img/how_it_works.webp';
+import MembraneLogo from '@site/static/img/membrane-logo.svg';
+import StreamingImg from '@site/static/img/streaming.webp';
+import SwmLogo from '@site/static/img/swm-logo.svg';
+import VideoConferencingImg from '@site/static/img/videoconferencing.webp';
 import WebGpuLogoDark from '@site/static/img/webgpu-dark.svg';
 import WebGpuLogoLight from '@site/static/img/webgpu-light.svg';
-import VideoConferencingImg from '@site/static/img/videoconferencing.webp';
-import StreamingImg from '@site/static/img/streaming.webp';
-import BroadcastingImg from '@site/static/img/broadcasting.webp';
-import { useColorMode } from '@docusaurus/theme-common';
+import { PropsWithChildren } from 'react';
+import { IconContext, IconType } from 'react-icons';
 import TypewriterComponent from 'typewriter-effect';
 import ExampleScene from '../components/example_scene';
+import styles from './index.module.css';
 
 function HomepageHeader() {
   return (
