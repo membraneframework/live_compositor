@@ -21,6 +21,11 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'doc',
+          id: 'guides/audio-mixing',
+          label: 'Audio mixing',
+        },
+        {
+          type: 'doc',
           id: 'guides/deliver-input',
           label: 'Deliver input streams',
         },

@@ -16,7 +16,7 @@ This guide will explain how to create simple scene that is combining input strea
 
 <Tabs queryString="lang">
   <TabItem value="http" label="HTTP">
-    Start the compositor server. Check out [configuration page](../deployment/configuration.md) for available configuration options.
+    [Start the compositor server](../deployment/overview.md). Check out [configuration page](../deployment/configuration.md) for available configuration options.
   </TabItem>
   <TabItem value="membrane" label="Membrane Framework">
     Following code snippets are implementing `handle_init/2` or `handle_setup/2` callbacks. Those
@@ -102,10 +102,9 @@ This guide will explain how to create simple scene that is combining input strea
       }
     }
     ```
-
     After receiving the response you can establish the connection and start sending the stream. Check out [how to deliver input streams](./deliver-input.md) to learn more.
 
-    In this example we are using RTP over TCP, but it could be easily replaced by UDP.
+    In this example, we are using RTP over TCP, but it could be easily replaced by UDP.
   </TabItem>
   <TabItem value="membrane" label="Membrane Framework">
     ```elixir
@@ -155,11 +154,11 @@ Configure it to render just an empty [`View`](../api/components/View.md) compone
       }
     }
     ```
+    You can can configure output framerate with [`LIVE_COMPOSITOR_OUTPUT_FRAMERATE` environmental variable](../deployment/configuration.md#live_compositor_output_framerate).
 
     After receiving the response you can establish the connection and start listening for the stream. Check out [how to receive output streams](./receive-output.md) to learn more.
 
-    In this example we are using RTP over TCP, if you prefer to use UDP you need start listening on the specified port before sending register request to make sure you are not losing
-    first frames.
+    In this example we are using RTP over TCP. If you prefer to use UDP you need to start listening on the specified port before sending the register request to make sure you are not losing first frames.
   </TabItem>
   <TabItem value="membrane" label="Membrane Framework">
     ```elixir

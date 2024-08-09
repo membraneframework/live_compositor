@@ -13,6 +13,7 @@ to file as MP4.
 
 To get started check out our [`Guides`](./category/guides) section that will walk you through common scenarios.
 - [`Simple scene`](./guides/simple-scene.md) describes how to achieve a few of the most basic layouts when composing video.
+- [`Audio mixing`](./guides/audio-mixing.md) describes how you mix audio.
 - [`Deliver input streams`](./guides/deliver-input.md) explains and shows examples of streaming multimedia to the LiveCompositor and use them for mixing/composition.
 - [`Receive output streams`](./guides/receive-output.md) explains and shows examples of receiving streams with results of mixing/composition from the LiveCompositor
 - [`Transitions (View/Rescaler)`](./guides/view-transition.md) shows a few basic examples of animated transitions on `View`/`Rescaler` components.
