@@ -14,7 +14,7 @@ use serde_json::json;
 #[test]
 pub fn schedule_update() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "schedule_update_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let input_2_port = instance.get_port();
     let output_port = instance.get_port();

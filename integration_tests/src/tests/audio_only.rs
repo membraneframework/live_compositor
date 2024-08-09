@@ -13,7 +13,7 @@ use crate::{
 #[test]
 pub fn audio_mixing_with_offset() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "audio_mixing_with_offset_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let input_2_port = instance.get_port();
     let output_port = instance.get_port();
@@ -112,7 +112,7 @@ pub fn audio_mixing_with_offset() -> Result<()> {
 #[test]
 pub fn audio_mixing_no_offset() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "audio_mixing_no_offset_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let input_2_port = instance.get_port();
     let output_port = instance.get_port();
@@ -213,7 +213,7 @@ pub fn audio_mixing_no_offset() -> Result<()> {
 #[test]
 pub fn single_input_opus() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "single_input_opus_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let output_port = instance.get_port();
 
@@ -295,7 +295,7 @@ pub fn single_input_opus() -> Result<()> {
 #[test]
 pub fn single_input_aac() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "single_input_aac_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let output_port = instance.get_port();
 

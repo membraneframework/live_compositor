@@ -13,7 +13,7 @@ use crate::{
 #[test]
 pub fn single_input_with_video_and_audio_flaky() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "single_input_with_video_and_audio_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_port = instance.get_port();
     let output_port = instance.get_port();
 

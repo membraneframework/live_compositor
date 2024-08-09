@@ -13,7 +13,7 @@ use serde_json::json;
 #[test]
 pub fn unregistering() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "unregistering_test_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_port = instance.get_port();
     let output_port = instance.get_port();
 

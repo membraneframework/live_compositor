@@ -18,7 +18,7 @@ use crate::{
 #[test]
 pub fn push_input_before_start_tcp() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "push_entire_input_before_start_tcp.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_port = instance.get_port();
     let output_port = instance.get_port();
 
@@ -103,7 +103,7 @@ pub fn push_input_before_start_tcp() -> Result<()> {
 #[test]
 pub fn push_input_before_start_udp() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "push_entire_input_before_start_udp.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_port = instance.get_port();
     let output_port = instance.get_port();
 
@@ -188,7 +188,7 @@ pub fn push_input_before_start_udp() -> Result<()> {
 #[test]
 pub fn push_input_before_start_tcp_no_offset() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "push_entire_input_before_start_tcp_without_offset.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_port = instance.get_port();
     let output_port = instance.get_port();
 
@@ -273,7 +273,7 @@ pub fn push_input_before_start_tcp_no_offset() -> Result<()> {
 #[test]
 pub fn push_input_before_start_udp_no_offset() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "push_entire_input_before_start_udp_without_offset.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_port = instance.get_port();
     let output_port = instance.get_port();
 

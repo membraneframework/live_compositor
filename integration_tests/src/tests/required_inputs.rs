@@ -14,7 +14,7 @@ use serde_json::json;
 #[test]
 pub fn required_inputs_no_offset() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "required_inputs_no_offset_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let input_2_port = instance.get_port();
     let output_port = instance.get_port();
@@ -131,7 +131,7 @@ pub fn required_inputs_no_offset() -> Result<()> {
 #[test]
 pub fn required_inputs_with_offset() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "required_inputs_with_offset_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let input_2_port = instance.get_port();
     let output_port = instance.get_port();
@@ -252,7 +252,7 @@ pub fn required_inputs_with_offset() -> Result<()> {
 #[test]
 pub fn optional_inputs_no_offset_flaky() -> Result<()> {
     const OUTPUT_DUMP_FILE: &str = "optional_inputs_no_offset_output.rtp";
-    let instance = CompositorInstance::start();
+    let instance = CompositorInstance::start(None);
     let input_1_port = instance.get_port();
     let input_2_port = instance.get_port();
     let output_port = instance.get_port();
