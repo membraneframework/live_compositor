@@ -1,4 +1,4 @@
-import Docs from "@site/pages/api/generated/output-OutputStream.md"
+import Docs from "@site/pages/api/generated/output-RtpOutputStream.md"
 
 # RTP
 

@@ -30,15 +30,15 @@ POST: /api/output/:output_id/register
 
 ```typescript
 type RequestBody = {
-  type: "rtp_stream"
+  type: "rtp_stream" | "mp4"
   ... // output specific options
 }
 ```
 
-Register external destination that can be used as a compositor output.
+Register external destination that can be used as a compositor output. See outputs documentation to learn more.
 
-- `type` - Output type. Currently, only RTP streams are supported.
-- See [documentation](./outputs/rtp.md) for the rest of the options.
+- [RTP](./outputs/rtp.md)
+- [MP4](./outputs/mp4.md)
 
 ### Unregister output
 

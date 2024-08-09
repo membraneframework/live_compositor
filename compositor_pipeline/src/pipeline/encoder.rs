@@ -1,13 +1,19 @@
 use compositor_render::{Frame, OutputId, Resolution};
 use crossbeam_channel::{bounded, Receiver, Sender};
+use fdk_aac::AacEncoder;
 use log::error;
 
-use crate::{audio_mixer::OutputSamples, error::EncoderInitError, queue::PipelineEvent};
+use crate::{
+    audio_mixer::{AudioChannels, OutputSamples},
+    error::EncoderInitError,
+    queue::PipelineEvent,
+};
 
 use self::{ffmpeg_h264::LibavH264Encoder, opus::OpusEncoder};
 
 use super::types::EncoderOutputEvent;
 
+pub mod fdk_aac;
 pub mod ffmpeg_h264;
 pub mod opus;
 
@@ -23,7 +29,8 @@ pub enum VideoEncoderOptions {
 
 #[derive(Debug, Clone)]
 pub enum AudioEncoderOptions {
-    Opus(opus::Options),
+    Opus(opus::OpusEncoderOptions),
+    Aac(fdk_aac::AacEncoderOptions),
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -44,6 +51,7 @@ pub enum VideoEncoder {
 
 pub enum AudioEncoder {
     Opus(OpusEncoder),
+    Aac(AacEncoder),
 }
 
 impl Encoder {
@@ -65,6 +73,7 @@ impl Encoder {
 
         let audio_encoder = match options.audio {
             Some(audio_encoder_options) => Some(AudioEncoder::new(
+                output_id,
                 audio_encoder_options,
                 sample_rate,
                 encoded_chunks_sender,
@@ -93,7 +102,7 @@ impl Encoder {
 
     pub fn samples_batch_sender(&self) -> Option<&Sender<PipelineEvent<OutputSamples>>> {
         match &self.audio {
-            Some(AudioEncoder::Opus(encoder)) => Some(encoder.samples_batch_sender()),
+            Some(encoder) => Some(encoder.samples_batch_sender()),
             None => {
                 error!("Non audio encoder received samples to send.");
                 None
@@ -138,14 +147,34 @@ impl VideoEncoder {
 
 impl AudioEncoder {
     fn new(
+        output_id: &OutputId,
         options: AudioEncoderOptions,
         sample_rate: u32,
         sender: Sender<EncoderOutputEvent>,
     ) -> Result<Self, EncoderInitError> {
         match options {
-            AudioEncoderOptions::Opus(opus_encoder_options) => {
-                OpusEncoder::new(opus_encoder_options, sample_rate, sender).map(AudioEncoder::Opus)
+            AudioEncoderOptions::Opus(options) => {
+                OpusEncoder::new(options, sample_rate, sender).map(AudioEncoder::Opus)
             }
+            AudioEncoderOptions::Aac(options) => {
+                AacEncoder::new(output_id, options, sample_rate, sender).map(AudioEncoder::Aac)
+            }
+        }
+    }
+
+    fn samples_batch_sender(&self) -> &Sender<PipelineEvent<OutputSamples>> {
+        match self {
+            Self::Opus(encoder) => encoder.samples_batch_sender(),
+            Self::Aac(encoder) => encoder.samples_batch_sender(),
+        }
+    }
+}
+
+impl AudioEncoderOptions {
+    pub fn channels(&self) -> AudioChannels {
+        match self {
+            AudioEncoderOptions::Opus(options) => options.channels,
+            AudioEncoderOptions::Aac(options) => options.channels,
         }
     }
 }

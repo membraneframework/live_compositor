@@ -47,7 +47,7 @@ impl RtpSender {
         output_id: &OutputId,
         options: RtpSenderOptions,
         packets_receiver: Receiver<EncoderOutputEvent>,
-    ) -> Result<(Self, Option<Port>), OutputInitError> {
+    ) -> Result<(Self, Port), OutputInitError> {
         let payloader = Payloader::new(options.video, options.audio);
         let mtu = match options.connection_options {
             RtpConnectionOptions::Udp { .. } => 1400,
@@ -86,7 +86,7 @@ impl RtpSender {
                 connection_options: options.connection_options,
                 should_close,
             },
-            Some(port),
+            port,
         ))
     }
 }

@@ -9,7 +9,7 @@ use super::util::*;
 /// At least one of `video` and `audio` has to be defined.
 #[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct RtpInputStream {
+pub struct RtpInput {
     /// UDP port or port range on which the compositor should listen for the stream.
     pub port: PortOrPortRange,
     /// Transport protocol.
@@ -31,7 +31,7 @@ pub struct RtpInputStream {
 /// Exactly one of `url` and `path` has to be defined.
 #[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct Mp4 {
+pub struct Mp4Input {
     /// URL of the MP4 file.
     pub url: Option<String>,
     /// Path to the MP4 file.

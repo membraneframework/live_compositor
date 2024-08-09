@@ -2,7 +2,7 @@ use super::docs_config::DocsConfig;
 use super::document::generate;
 use super::markdown::overrides;
 use compositor_api::types::{
-    DeckLink, Image, ImageSpec, InputStream, Mp4, Rescaler, RtpInputStream, RtpOutputStream,
+    DeckLink, Image, ImageSpec, InputStream, Mp4Input, Mp4Output, Rescaler, RtpInput, RtpOutput,
     Shader, ShaderSpec, Text, Tiles, View, WebRendererSpec, WebView,
 };
 use std::{fs, path::PathBuf};
@@ -25,8 +25,8 @@ pub fn generate_docs() {
         generate::<ShaderSpec>("Shader", &config),
         generate::<ImageSpec>("Image", &config),
         generate::<WebRendererSpec>("WebRenderer", &config),
-        generate::<RtpInputStream>("RtpInputStream", &config),
-        generate::<Mp4>("Mp4", &config),
+        generate::<RtpInput>("RtpInputStream", &config),
+        generate::<Mp4Input>("Mp4Input", &config),
         generate::<DeckLink>("DeckLink", &config),
     ];
 
@@ -41,7 +41,10 @@ pub fn generate_docs() {
         generate::<Rescaler>("Rescaler", &config),
     ];
 
-    let output_pages = [generate::<RtpOutputStream>("OutputStream", &config)];
+    let output_pages = [
+        generate::<RtpOutput>("RtpOutputStream", &config),
+        generate::<Mp4Output>("Mp4Output", &config),
+    ];
 
     for page in renderer_pages {
         fs::write(

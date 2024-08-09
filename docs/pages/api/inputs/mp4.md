@@ -1,4 +1,4 @@
-import Docs from "@site/pages/api/generated/renderer-Mp4.md"
+import Docs from "@site/pages/api/generated/renderer-Mp4Input.md"
 
 # MP4
 An input type that allows the compositor to read static MP4 files.

@@ -81,11 +81,11 @@ impl TryFrom<InputRtpAudioOptions> for InputAudioStream {
     }
 }
 
-impl TryFrom<RtpInputStream> for pipeline::RegisterInputOptions {
+impl TryFrom<RtpInput> for pipeline::RegisterInputOptions {
     type Error = TypeError;
 
-    fn try_from(value: RtpInputStream) -> Result<Self, Self::Error> {
-        let RtpInputStream {
+    fn try_from(value: RtpInput) -> Result<Self, Self::Error> {
+        let RtpInput {
             port,
             video,
             audio,
@@ -131,11 +131,11 @@ impl TryFrom<RtpInputStream> for pipeline::RegisterInputOptions {
     }
 }
 
-impl TryFrom<Mp4> for pipeline::RegisterInputOptions {
+impl TryFrom<Mp4Input> for pipeline::RegisterInputOptions {
     type Error = TypeError;
 
-    fn try_from(value: Mp4) -> Result<Self, Self::Error> {
-        let Mp4 {
+    fn try_from(value: Mp4Input) -> Result<Self, Self::Error> {
+        let Mp4Input {
             url,
             path,
             required,

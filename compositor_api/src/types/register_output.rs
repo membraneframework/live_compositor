@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::sync::Arc;
 
 use schemars::JsonSchema;
@@ -11,7 +12,7 @@ use super::*;
 
 #[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct RtpOutputStream {
+pub struct RtpOutput {
     /// Depends on the value of the `transport_protocol` field:
     ///   - `udp` - An UDP port number that RTP packets will be sent to.
     ///   - `tcp_server` - A local TCP port number or a port range that LiveCompositor will listen for incoming connections.
@@ -20,13 +21,26 @@ pub struct RtpOutputStream {
     pub ip: Option<Arc<str>>,
     /// (**default=`"udp"`**) Transport layer protocol that will be used to send RTP packets.
     pub transport_protocol: Option<TransportProtocol>,
-    pub video: Option<OutputRtpVideoOptions>,
+    /// Specifies video included in output RTP stream.
+    pub video: Option<OutputVideoOptions>,
+    /// Specifies audio included in output RTP stream.
     pub audio: Option<OutputRtpAudioOptions>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct OutputRtpVideoOptions {
+pub struct Mp4Output {
+    /// Path to output MP4 file.
+    pub path: String,
+    /// Specifies video included in output MP4 file.
+    pub video: Option<OutputVideoOptions>,
+    /// Specifies audio included in output MP4 file.
+    pub audio: Option<OutputMp4AudioOptions>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct OutputVideoOptions {
     /// Output resolution in pixels.
     pub resolution: Resolution,
     /// Defines when output stream should end if some of the input streams are finished. If output includes both audio and video streams, then EOS needs to be sent on both.
@@ -45,7 +59,20 @@ pub struct OutputRtpAudioOptions {
     /// Condition for termination of output stream based on the input streams states.
     pub send_eos_when: Option<OutputEndCondition>,
     /// Audio encoder options.
-    pub encoder: AudioEncoderOptions,
+    pub encoder: RtpAudioEncoderOptions,
+    /// Initial audio mixer configuration for output.
+    pub initial: Audio,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct OutputMp4AudioOptions {
+    /// (**default="sum_clip"**) Specifies how audio should be mixed.
+    pub mixing_strategy: Option<MixingStrategy>,
+    /// Condition for termination of output stream based on the input streams states.
+    pub send_eos_when: Option<OutputEndCondition>,
+    /// Audio encoder options.
+    pub encoder: Mp4AudioEncoderOptions,
     /// Initial audio mixer configuration for output.
     pub initial: Audio,
 }
@@ -65,13 +92,20 @@ pub enum VideoEncoderOptions {
 
 #[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
-pub enum AudioEncoderOptions {
+pub enum RtpAudioEncoderOptions {
     Opus {
+        /// Specifies channels configuration.
         channels: AudioChannels,
 
         /// (**default="voip"**) Specifies preset for audio output encoder.
         preset: Option<OpusEncoderPreset>,
     },
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub enum Mp4AudioEncoderOptions {
+    Aac { channels: AudioChannels },
 }
 
 /// This type defines when end of an input stream should trigger end of the output stream. Only one of those fields can be set at the time.

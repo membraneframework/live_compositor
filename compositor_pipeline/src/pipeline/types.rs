@@ -20,6 +20,7 @@ pub struct EncodedChunk {
     pub kind: EncodedChunkKind,
 }
 
+#[derive(Debug)]
 pub enum EncoderOutputEvent {
     Data(EncodedChunk),
     AudioEOS,
@@ -111,6 +112,17 @@ impl fmt::Debug for Samples {
         };
         f.debug_struct(&format!("Samples::{}", name))
             .field("len", &length)
+            .finish()
+    }
+}
+
+impl fmt::Debug for EncodedChunk {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("EncodedChunk")
+            .field("data", &format!("len={}", self.data.len()))
+            .field("pts", &self.pts)
+            .field("dts", &self.dts)
+            .field("kind", &self.kind)
             .finish()
     }
 }

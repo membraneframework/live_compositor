@@ -123,7 +123,7 @@ const sidebars: SidebarsConfig = {
           label: 'Outputs',
           collapsible: false,
           description: 'Elements that deliver generated media.',
-          items: ['api/outputs/rtp'],
+          items: ['api/outputs/rtp', 'api/outputs/mp4'],
         },
         {
           type: 'category',

@@ -2,6 +2,7 @@ use compositor_render::{
     error::RequestKeyframeError, Frame, OutputFrameFormat, OutputId, Resolution,
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
+use mp4::{Mp4FileWriter, Mp4OutputOptions};
 
 use crate::{audio_mixer::OutputSamples, error::RegisterOutputError, queue::PipelineEvent};
 
@@ -13,6 +14,7 @@ use super::{
     PipelineCtx, Port, RawDataReceiver,
 };
 
+pub mod mp4;
 pub mod rtp;
 
 /// Options to configure public outputs that can be constructed via REST API
@@ -26,6 +28,7 @@ pub struct OutputOptions {
 #[derive(Debug, Clone)]
 pub enum OutputProtocolOptions {
     Rtp(RtpSenderOptions),
+    Mp4(Mp4OutputOptions),
 }
 
 /// Options to configure output that sends h264 and opus audio via channel
@@ -59,6 +62,10 @@ pub struct RawAudioOptions;
 pub enum Output {
     Rtp {
         sender: RtpSender,
+        encoder: Encoder,
+    },
+    Mp4 {
+        writer: Mp4FileWriter,
         encoder: Encoder,
     },
     EncodedData {
@@ -99,7 +106,18 @@ impl OutputOptionsExt<Option<Port>> for OutputOptions {
                     rtp::RtpSender::new(output_id, rtp_options.clone(), packets)
                         .map_err(|e| RegisterOutputError::OutputError(output_id.clone(), e))?;
 
-                Ok((Output::Rtp { sender, encoder }, port))
+                Ok((Output::Rtp { sender, encoder }, Some(port)))
+            }
+            OutputProtocolOptions::Mp4(mp4_opt) => {
+                let writer = Mp4FileWriter::new(
+                    output_id.clone(),
+                    mp4_opt.clone(),
+                    packets,
+                    ctx.output_sample_rate,
+                )
+                .map_err(|e| RegisterOutputError::OutputError(output_id.clone(), e))?;
+
+                Ok((Output::Mp4 { writer, encoder }, None))
             }
         }
     }
@@ -161,6 +179,7 @@ impl Output {
     pub fn frame_sender(&self) -> Option<&Sender<PipelineEvent<Frame>>> {
         match &self {
             Output::Rtp { encoder, .. } => encoder.frame_sender(),
+            Output::Mp4 { encoder, .. } => encoder.frame_sender(),
             Output::EncodedData { encoder } => encoder.frame_sender(),
             Output::RawData { video, .. } => video.as_ref(),
         }
@@ -169,6 +188,7 @@ impl Output {
     pub fn samples_batch_sender(&self) -> Option<&Sender<PipelineEvent<OutputSamples>>> {
         match &self {
             Output::Rtp { encoder, .. } => encoder.samples_batch_sender(),
+            Output::Mp4 { encoder, .. } => encoder.samples_batch_sender(),
             Output::EncodedData { encoder } => encoder.samples_batch_sender(),
             Output::RawData { audio, .. } => audio.as_ref(),
         }
@@ -177,6 +197,7 @@ impl Output {
     pub fn resolution(&self) -> Option<Resolution> {
         match &self {
             Output::Rtp { encoder, .. } => encoder.video.as_ref().map(|v| v.resolution()),
+            Output::Mp4 { encoder, .. } => encoder.video.as_ref().map(|v| v.resolution()),
             Output::EncodedData { encoder } => encoder.video.as_ref().map(|v| v.resolution()),
             Output::RawData { resolution, .. } => *resolution,
         }
@@ -185,6 +206,7 @@ impl Output {
     pub fn request_keyframe(&self, output_id: OutputId) -> Result<(), RequestKeyframeError> {
         let encoder = match &self {
             Output::Rtp { encoder, .. } => encoder,
+            Output::Mp4 { encoder, .. } => encoder,
             Output::EncodedData { encoder } => encoder,
             Output::RawData { .. } => return Err(RequestKeyframeError::RawOutput(output_id)),
         };
@@ -211,6 +233,10 @@ impl Output {
             Output::RawData { video, .. } => {
                 video.as_ref().map(|_| OutputFrameFormat::RgbaWgpuTexture)
             }
+            Output::Mp4 { encoder, .. } => encoder
+                .video
+                .as_ref()
+                .map(|_| OutputFrameFormat::PlanarYuv420Bytes),
         }
     }
 }

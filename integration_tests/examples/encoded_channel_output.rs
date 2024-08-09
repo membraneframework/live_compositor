@@ -68,10 +68,12 @@ fn main() {
                 },
                 raw_options: vec![],
             })),
-            audio: Some(AudioEncoderOptions::Opus(encoder::opus::Options {
-                channels: AudioChannels::Stereo,
-                preset: AudioEncoderPreset::Voip,
-            })),
+            audio: Some(AudioEncoderOptions::Opus(
+                encoder::opus::OpusEncoderOptions {
+                    channels: AudioChannels::Stereo,
+                    preset: AudioEncoderPreset::Voip,
+                },
+            )),
         },
         video: Some(compositor_pipeline::pipeline::OutputVideoOptions {
             initial: Component::InputStream(InputStreamComponent {

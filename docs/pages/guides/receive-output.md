@@ -1,8 +1,12 @@
 # How to receive output streams
 
-Live Compositor currently supports only RTP (H264 + Opus) as an output format.
+Live Compositor currently supports 2 output types:
+- RTP (H264 + Opus)
+- MP4 (H264 + AAC)
 
-To deliver output stream in some other format you can use tools like FFmpeg, GStreamer or Membrane Framework to convert between RTP and the desired format.
+MP4 is useful for non real-time rendering scenarios, but for most streaming use cases RTP protocol will be a primary choice.
+
+To deliver RTP output stream in some other format you can use tools like FFmpeg, GStreamer or Membrane Framework to convert between RTP and the desired format.
 
 ### RTP over TCP vs UDP
 

@@ -10,8 +10,8 @@ use crate::{
 use compositor_api::{
     error::ApiError,
     types::{
-        DeckLink, ImageSpec, InputId, Mp4, OutputId, RendererId, RtpInputStream, RtpOutputStream,
-        ShaderSpec, WebRendererSpec,
+        DeckLink, ImageSpec, InputId, Mp4Input, Mp4Output, OutputId, RendererId, RtpInput,
+        RtpOutput, ShaderSpec, WebRendererSpec,
     },
 };
 
@@ -20,8 +20,8 @@ use super::ApiState;
 #[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum RegisterInput {
-    RtpStream(RtpInputStream),
-    Mp4(Mp4),
+    RtpStream(RtpInput),
+    Mp4(Mp4Input),
     #[serde(rename = "decklink")]
     DeckLink(DeckLink),
 }
@@ -29,7 +29,8 @@ pub enum RegisterInput {
 #[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum RegisterOutput {
-    RtpStream(RtpOutputStream),
+    RtpStream(RtpOutput),
+    Mp4(Mp4Output),
 }
 
 pub(super) async fn handle_input(
@@ -70,6 +71,9 @@ pub(super) async fn handle_output(
         let response = match request {
             RegisterOutput::RtpStream(rtp) => {
                 Pipeline::register_output(&mut api.pipeline(), output_id.into(), rtp.try_into()?)?
+            }
+            RegisterOutput::Mp4(mp4) => {
+                Pipeline::register_output(&mut api.pipeline(), output_id.into(), mp4.try_into()?)?
             }
         };
         match response {
