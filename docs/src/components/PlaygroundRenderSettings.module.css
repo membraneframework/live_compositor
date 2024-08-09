@@ -1,0 +1,22 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.content {
+    zoom: 1.28;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    background-color: #242427;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #444950;
+    width: 548px;
+    margin: 0 auto;
+}
